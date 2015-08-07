@@ -30,7 +30,7 @@
 							<goal>testCompile</goal>
 						</goals>
 						<configuration>
-							<sourceDir>${project.build.sourceDirectory}/../java</sourceDir>
+							<mainSourceDir>${project.build.sourceDirectory}/../java</mainSourceDir>
 						</configuration>
 					</execution>
 				</executions>
