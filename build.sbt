@@ -12,7 +12,9 @@ lazy val scalaTestVersion = "2.2.6"
 libraryDependencies ++= Seq(
 	"com.typesafe.akka" %% "akka-actor" % akkaVersion,
 	"com.typesafe.akka" %% "akka-testkit" % akkaVersion,
+
 	"org.scalatest" %% "scalatest" % scalaTestVersion % "test",
+	"org.scalamock" %% "scalamock-scalatest-support" % "3.2.2" % "test",
 	"junit" % "junit" % "4.12" % "test",
 	"com.novocode" % "junit-interface" % "0.11" % "test",
 
