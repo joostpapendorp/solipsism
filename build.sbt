@@ -1,26 +1,26 @@
-name := "sandbox"
+name := "template"
 
 organization := "nl.papendorp"
 
 version := "0.1-SNAPSHOT"
 
-scalaVersion := "2.11.8"
+scalaVersion := "2.12.2"
 
-lazy val akkaVersion = "2.4.7"
-lazy val scalaTestVersion = "2.2.6"
+lazy val akkaVersion = "2.5.2"
+lazy val scalaTestVersion = "3.0.1"
 
 libraryDependencies ++= Seq(
 	"com.typesafe.akka" %% "akka-actor" % akkaVersion,
-	"com.typesafe.akka" %% "akka-testkit" % akkaVersion,
 
-	"org.scalatest" %% "scalatest" % scalaTestVersion % "test",
-	"org.scalamock" %% "scalamock-scalatest-support" % "3.2.2" % "test",
-	"junit" % "junit" % "4.12" % "test",
-	"com.novocode" % "junit-interface" % "0.11" % "test",
+	"org.scalatest" %% "scalatest" % scalaTestVersion % Test,
+	"com.typesafe.akka" %% "akka-testkit" % akkaVersion % Test,
+	//http://scalamock.org/quick-start/
+	"org.scalamock" %% "scalamock-scalatest-support" % "3.5.0" % Test,
 
-	// workaround for SBT bug
-	"org.scala-lang" % "scala-reflect" % "2.11.8",
-	"org.scala-lang.modules" %% "scala-xml" % "1.0.4"
+	"info.cukes" %% "cucumber-scala" % "1.2.5" % Test,
+	"info.cukes" % "cucumber-junit" % "1.2.5" % Test
 )
 
-testOptions += Tests.Argument( TestFrameworks.JUnit, "-v" )
+enablePlugins( CucumberPlugin )
+
+CucumberPlugin.glue := "com/waioeka/sbt/"
