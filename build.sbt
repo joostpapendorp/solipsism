@@ -1,4 +1,4 @@
-name := "template"
+name := "solipsism"
 
 organization := "nl.papendorp"
 
