@@ -7,6 +7,8 @@ version := "0.1-SNAPSHOT"
 scalaVersion := "2.12.4"
 
 lazy val akkaVersion = "2.5.6"
+lazy val cucumberVersion = "1.2.5"
+
 lazy val scalaTestVersion = "3.0.1"
 
 libraryDependencies ++= Seq(
@@ -21,10 +23,5 @@ libraryDependencies ++= Seq(
 	//http://scalamock.org/quick-start/
 	"org.scalamock" %% "scalamock-scalatest-support" % "3.5.0" % Test,
 
-	"info.cukes" %% "cucumber-scala" % "1.2.5" % Test,
-	"info.cukes" % "cucumber-junit" % "1.2.5" % Test
+	"info.cukes" %% "cucumber-scala" % cucumberVersion % Test
 )
-
-enablePlugins( CucumberPlugin )
-
-CucumberPlugin.glue := "com/waioeka/sbt/"
