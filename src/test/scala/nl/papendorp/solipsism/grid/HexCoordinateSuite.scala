@@ -13,7 +13,7 @@ import org.scalatest.{Matchers, WordSpec}
 
 import scala.math.abs
 
-class HexCoordinateTest
+class HexCoordinateSuite
 	extends WordSpec
 		with Matchers
 		with Checkers
@@ -54,7 +54,7 @@ class HexCoordinateTest
 					val coordinate = HexCoordinate( x = x, y = y )
 					coordinate.x === x && coordinate.y === y
 				}
-				check( forAll{ retainsCoordiates } )
+				check( forAll( retainsCoordiates ) )
 			}
 
 			"normalize z-position" in {
@@ -62,7 +62,7 @@ class HexCoordinateTest
 					val coordinate = HexCoordinate( x = x, y = y )
 					coordinate.x + coordinate.y + coordinate.z === 0
 				}
-				check( forAll{ normalizesZ } )
+				check( forAll( normalizesZ ) )
 			}
 
 			"print its positions" in {
@@ -125,7 +125,7 @@ class HexCoordinateTest
 	"The size of a coordinate" should {
 		"be positive" in {
 			val hasPositiveSize = ( x: Int, y: Int ) => HexCoordinate( x = x, y = y ).size >= 0
-			check( forAll{ hasPositiveSize } )
+			check( forAll( hasPositiveSize ) )
 		}
 
 		"be at minimum the size of the largest position" in {
