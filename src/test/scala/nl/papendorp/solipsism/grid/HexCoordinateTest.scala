@@ -1,7 +1,8 @@
 package nl.papendorp.solipsism.grid
 
 
-import nl.papendorp.solipsism.grid.HexCoordinate.{Clockwise, CounterClockwise, Origin, Rotation}
+import nl.papendorp.solipsism.grid.HexCoordinate.Origin
+import nl.papendorp.solipsism.grid.Rotation.{Clockwise, CounterClockwise}
 import org.scalacheck.Arbitrary._
 import org.scalacheck.Gen.choose
 import org.scalacheck.Prop.forAll
