@@ -97,7 +97,7 @@ class HexCoordinateSuite
 		}
 
 		"remain identical under zero" in {
-			check( forAll( ( coordinate: HexCoordinate ) => coordinate + Origin === coordinate ) )
+			check( forAll( ( coordinate: HexCoordinate ) => coordinate + Origin === coordinate && Origin + coordinate == coordinate ) )
 		}
 	}
 
