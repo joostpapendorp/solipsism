@@ -1,6 +1,5 @@
 package nl.papendorp.solipsism.grid
 
-
 import nl.papendorp.solipsism.grid.Rotation.Clockwise
 
 import scala.math.abs
@@ -12,7 +11,6 @@ object HexCoordinate
 	def apply( x: Int = 0, y: Int = 0 ) = new HexCoordinate( x, y )
 
 	def unapply( coordinate: HexCoordinate ): Option[ (Int, Int) ] = Option( coordinate ) map (c => (c.x, c.y))
-
 }
 
 sealed case class HexCoordinate( x: Int = 0, y: Int = 0 )
@@ -20,11 +18,13 @@ sealed case class HexCoordinate( x: Int = 0, y: Int = 0 )
 	lazy val z: Int = 0 - x - y
 	lazy val size: Int = size( x, y, z )
 
-	def +( that: HexCoordinate ): HexCoordinate = HexCoordinate( x = this.x + that.x, y = this.y + that.y )
+	def +( that: HexCoordinate ): HexCoordinate = (this.x + that.x, this.y + that.y)
 
-	def -( that: HexCoordinate ): HexCoordinate = HexCoordinate( x = this.x - that.x, y = this.y - that.y )
+	def -( that: HexCoordinate ): HexCoordinate = (this.x - that.x, this.y - that.y)
 
-	def unary_- = HexCoordinate( x = -x, y = -y )
+	def *( scalar: Int ): HexCoordinate = (x * scalar, y * scalar)
+
+	def unary_- : HexCoordinate = (-x, -y)
 
 	// optimized from (this-that).size
 	def distanceTo( that: HexCoordinate ): Int = size( this.x - that.x, this.y - that.y, this.z - that.z )
@@ -40,7 +40,7 @@ sealed case class HexCoordinate( x: Int = 0, y: Int = 0 )
 	override def toString = s"($x, $y, $z)"
 
 	// max preferred over sum/2 b/c of integer overflow
-	private def size( positions: Int* ) = positions map abs max
+	private def size( positions: Int* ) = (positions map abs).max
 }
 
 
@@ -51,16 +51,14 @@ object Rotation
 	{
 		override lazy val reverse: Rotation = CounterClockwise
 
-		override def rotate60( coordinate: HexCoordinate ) =
-			HexCoordinate( -coordinate.z, -coordinate.x )
+		override def rotate60( coordinate: HexCoordinate ) = (-coordinate.z, -coordinate.x)
 	}
 
 	case object CounterClockwise extends Rotation
 	{
 		override lazy val reverse: Rotation = Clockwise
 
-		override def rotate60( coordinate: HexCoordinate ) =
-			HexCoordinate( -coordinate.y, -coordinate.z )
+		override def rotate60( coordinate: HexCoordinate ) = (-coordinate.y, -coordinate.z)
 	}
 
 }
@@ -98,7 +96,7 @@ object Direction
 
 	lazy val directions: Map[ Direction, HexCoordinate ] = {
 		val names = Seq( XUp, YUp, ZUp, XDown, YDown, ZDown )
-		names zip HexCoordinate( 0, 1 ).circle toMap
+		(names zip (0, 1).circle).toMap
 	}
 }
 
