@@ -1,36 +1,17 @@
 package nl.papendorp.solipsism.grid
 
 
-import nl.papendorp.solipsism.grid.Direction._
+import nl.papendorp.solipsism.TestConfiguration
 import nl.papendorp.solipsism.grid.HexCoordinate.Origin
-import nl.papendorp.solipsism.grid.Rotation.{Clockwise, CounterClockwise}
 import org.scalacheck.Arbitrary._
-import org.scalacheck.Gen.choose
 import org.scalacheck.Prop.forAll
-import org.scalacheck.{Arbitrary, Gen}
-import org.scalatest.prop.Checkers
-import org.scalatest.{Matchers, WordSpec}
 
 import scala.math.abs
 
 class HexCoordinateSuite
-	extends WordSpec
-		with Matchers
-		with Checkers
+	extends TestConfiguration
+		with CoordinateGeneration
 {
-	def slightlyLessLargeNumbers: Gen[ Int ] = choose( Int.MinValue / 6, Int.MaxValue / 6 )
-
-	def coordinateGenerator: Gen[ HexCoordinate ] = for {
-		x <- slightlyLessLargeNumbers
-		y <- slightlyLessLargeNumbers
-	} yield HexCoordinate( x, y )
-
-	def rotationGenerator: Gen[ Rotation ] = Gen.oneOf( Clockwise, CounterClockwise )
-
-	implicit def anyRotation: Arbitrary[ Rotation ] = Arbitrary( rotationGenerator )
-
-	implicit def arbitraryCoordinate: Arbitrary[ HexCoordinate ] = Arbitrary( coordinateGenerator )
-
 	"Origin" should {
 		"have size 0" in {
 			assert( Origin.size === 0 )
@@ -66,7 +47,7 @@ class HexCoordinateSuite
 			}
 
 			"print its positions" in {
-				(HexCoordinate( -1, 1 ) toString) should be( "(-1, 1, 0)" )
+				HexCoordinate( -1, 1 ).toString should be( "(-1, 1, 0)" )
 			}
 		}
 
@@ -137,7 +118,7 @@ class HexCoordinateSuite
 
 		"be equivalent to half the sum of position sizes" in {
 			check( forAll( ( coordinate: HexCoordinate ) => {
-				val halfSumOfPositionSizes = (List( coordinate.x, coordinate.y, coordinate.z ) map abs sum) / 2
+				val halfSumOfPositionSizes = (List( coordinate.x, coordinate.y, coordinate.z ) map abs).sum / 2
 				halfSumOfPositionSizes === coordinate.size
 				//but sum/2 overflows for n > MAX_INT/4, while implementation doesn't
 			} ) )
@@ -151,94 +132,6 @@ class HexCoordinateSuite
 
 		"be commutative" in {
 			check( forAll( ( left: HexCoordinate, right: HexCoordinate ) => left.distanceTo( right ) === right.distanceTo( left ) ) )
-		}
-	}
-
-	"Rotating" should {
-		"invert coordinate after three steps" in {
-			def threeRotationsInvertsCoordinate( coordinate: HexCoordinate, rotation: Rotation ): Boolean =
-				coordinate.rotate60( rotation, 3 ) === -coordinate
-
-			check( forAll( threeRotationsInvertsCoordinate _ ) )
-		}
-
-		"wrap around in six steps" in {
-			val fullCircleRotations: Gen[ (HexCoordinate, Rotation, Int) ] = for {
-				coordinate <- coordinateGenerator
-				rotation <- rotationGenerator
-				steps <- slightlyLessLargeNumbers
-			} yield (coordinate, rotation, steps * 6)
-
-			def endWhereStarted( fullCircleRotation: (HexCoordinate, Rotation, Int) ): Boolean = fullCircleRotation match {
-				case (coordinate, rotation, steps) => coordinate.rotate60( rotation, steps ) === coordinate
-			}
-
-			check( forAll( fullCircleRotations )( endWhereStarted ) )
-		}
-
-		"reverse to same location" in {
-			val rotations: Gen[ (HexCoordinate, Rotation, Int) ] = for {
-				coordinate <- coordinateGenerator
-				rotation <- rotationGenerator
-				circles <- Arbitrary.arbInt.arbitrary
-			} yield (coordinate, rotation, circles)
-
-			def reversesToStart( rotations: (HexCoordinate, Rotation, Int) ): Boolean = rotations match {
-				case (coordinate, rotation, steps) => coordinate.rotate60( rotation, steps ).rotate60( rotation.reverse, steps ) === coordinate
-			}
-
-			check( forAll( rotations )( reversesToStart ) )
-		}
-
-		"mirror its reverse rotation" in {
-			val rotations: Gen[ (HexCoordinate, Rotation, Int) ] = for {
-				coordinate <- coordinateGenerator
-				rotation <- rotationGenerator
-				steps <- choose( 0, 6 )
-			} yield (coordinate, rotation, steps)
-
-			def mirrorsOppositeDirection( rotations: (HexCoordinate, Rotation, Int) ): Boolean = rotations match {
-				case (coordinate, rotation, steps) => coordinate.rotate60( rotation, steps ) === coordinate.rotate60( rotation.reverse, -steps )
-			}
-
-			check( forAll( rotations )( mirrorsOppositeDirection ) )
-		}
-	}
-
-	"All directions" should {
-		val allDirections = Seq( XUp, YUp, ZUp, XDown, YDown, ZDown )
-
-		"move along their axes" in {
-			allDirections foreach {
-				case direction@(XUp | XDown) => directions( direction ).x should be( 0 )
-				case direction@(YUp | YDown) => directions( direction ).y should be( 0 )
-				case direction@(ZUp | ZDown) => directions( direction ).z should be( 0 )
-				case _ => fail
-			}
-		}
-
-		"invert to their counterparts" in {
-			-directions( XUp ) should be( directions( XDown ) )
-			-directions( YUp ) should be( directions( YDown ) )
-			-directions( ZUp ) should be( directions( ZDown ) )
-		}
-
-		"form a circle together" in {
-			val circle = HexCoordinate( 0, 1 ).circle
-			val actualDirections = allDirections map directions
-
-			circle zip actualDirections foreach {
-				case (expected, actual) => expected should be( actual )
-				case _ => fail
-			}
-		}
-
-		"have 6 distinct values" in {
-			allDirections.toSet.size should be( 6 )
-		}
-
-		"have size 1" in {
-			allDirections foreach (directions( _ ).size should be( 1 ))
 		}
 	}
 }
