@@ -61,6 +61,23 @@ class HexPointSuite
 		}
 	}
 
+	"Two points with same x and y" should {
+		def pointsWithSamePositions( predicate: (HexPoint, HexPoint) => Boolean )( x: Int, y: Int ) =
+			predicate( HexPoint( x, y ), HexPoint( x, y ) )
+
+		"be equal" in {
+			check( forAll( pointsWithSamePositions( _ == _ ) _ ) )
+		}
+
+		"have same hash" in {
+			check( forAll( pointsWithSamePositions( _.hashCode == _.hashCode ) _ ) )
+		}
+
+		"have same z" in {
+			check( forAll( pointsWithSamePositions( _.z == _.z ) _ ) )
+		}
+	}
+
 	"Adding two points" should {
 		"sum individual positions" in {
 			def sumsPosition( position: HexPoint => Int )( augend: HexPoint, addend: HexPoint ): Boolean =
