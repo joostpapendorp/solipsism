@@ -12,20 +12,20 @@ class RotationSuite
 
 	"Rotating" should {
 		"invert coordinate after three steps" in {
-			def threeRotationsInvertsCoordinate( coordinate: HexCoordinate, rotation: Rotation ): Boolean =
+			def threeRotationsInvertsCoordinate( coordinate: HexPoint, rotation: Rotation ): Boolean =
 				coordinate.rotate60( rotation, 3 ) === -coordinate
 
 			check( forAll( threeRotationsInvertsCoordinate _ ) )
 		}
 
 		"wrap around in six steps" in {
-			val fullCircleRotations: Gen[ (HexCoordinate, Rotation, Int) ] = for {
-				coordinate <- coordinateGenerator
+			val fullCircleRotations: Gen[ (HexPoint, Rotation, Int) ] = for {
+				coordinate <- pointGenerator
 				rotation <- rotationGenerator
 				steps <- slightlyLessLargeNumbers
 			} yield (coordinate, rotation, steps * 6)
 
-			def endWhereStarted( fullCircleRotation: (HexCoordinate, Rotation, Int) ): Boolean = fullCircleRotation match {
+			def endWhereStarted( fullCircleRotation: (HexPoint, Rotation, Int) ): Boolean = fullCircleRotation match {
 				case (coordinate, rotation, steps) => coordinate.rotate60( rotation, steps ) === coordinate
 			}
 
@@ -33,13 +33,13 @@ class RotationSuite
 		}
 
 		"reverse to same location" in {
-			val rotations: Gen[ (HexCoordinate, Rotation, Int) ] = for {
-				coordinate <- coordinateGenerator
+			val rotations: Gen[ (HexPoint, Rotation, Int) ] = for {
+				coordinate <- pointGenerator
 				rotation <- rotationGenerator
 				circles <- Arbitrary.arbInt.arbitrary
 			} yield (coordinate, rotation, circles)
 
-			def reversesToStart( rotations: (HexCoordinate, Rotation, Int) ): Boolean = rotations match {
+			def reversesToStart( rotations: (HexPoint, Rotation, Int) ): Boolean = rotations match {
 				case (coordinate, rotation, steps) => {
 					val forwards = coordinate.rotate60( rotation, steps )
 					val reverse = forwards.rotate60( rotation.reverse, steps )
@@ -51,13 +51,13 @@ class RotationSuite
 		}
 
 		"mirror its reverse rotation" in {
-			val rotations: Gen[ (HexCoordinate, Rotation, Int) ] = for {
-				coordinate <- coordinateGenerator
+			val rotations: Gen[ (HexPoint, Rotation, Int) ] = for {
+				coordinate <- pointGenerator
 				rotation <- rotationGenerator
 				steps <- choose( 0, 6 )
 			} yield (coordinate, rotation, steps)
 
-			def mirrorsOppositeDirection( rotations: (HexCoordinate, Rotation, Int) ): Boolean = rotations match {
+			def mirrorsOppositeDirection( rotations: (HexPoint, Rotation, Int) ): Boolean = rotations match {
 				case (coordinate, rotation, steps) => {
 					val positiveClockwise = coordinate.rotate60( rotation, steps )
 					val negativeCounterClockwise = coordinate.rotate60( rotation.reverse, -steps )

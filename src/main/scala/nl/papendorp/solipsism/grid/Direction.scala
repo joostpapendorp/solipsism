@@ -27,7 +27,7 @@ object Direction
 
 	case object ZDown extends Direction // ( -x, +y,  0 )
 
-	lazy val directions: Map[ Direction, HexCoordinate ] = {
+	lazy val directions: Map[ Direction, HexPoint ] = {
 		val names = Seq( XUp, YUp, ZUp, XDown, YDown, ZDown )
 		(names zip (0, 1).circle).toMap
 	}

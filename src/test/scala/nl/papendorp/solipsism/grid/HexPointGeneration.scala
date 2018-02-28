@@ -3,14 +3,14 @@ package nl.papendorp.solipsism.grid
 import org.scalacheck.Gen.choose
 import org.scalacheck.{Arbitrary, Gen}
 
-trait CoordinateGeneration
+trait HexPointGeneration
 {
 	def slightlyLessLargeNumbers: Gen[ Int ] = choose( Int.MinValue / 6, Int.MaxValue / 6 )
 
-	def coordinateGenerator: Gen[ HexCoordinate ] = for {
+	def pointGenerator: Gen[ HexPoint ] = for {
 		x <- slightlyLessLargeNumbers
 		y <- slightlyLessLargeNumbers
-	} yield HexCoordinate( x, y )
+	} yield HexPoint( x, y )
 
-	implicit def arbitraryCoordinate: Arbitrary[ HexCoordinate ] = Arbitrary( coordinateGenerator )
+	implicit def arbitraryPoint: Arbitrary[ HexPoint ] = Arbitrary( pointGenerator )
 }

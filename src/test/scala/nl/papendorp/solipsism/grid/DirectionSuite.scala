@@ -25,7 +25,7 @@ class DirectionSuite
 		}
 
 		"form a circle together" in {
-			val circle = HexCoordinate( 0, 1 ).circle
+			val circle = HexPoint( 0, 1 ).circle
 			val actualDirections = allDirections map directions
 
 			circle zip actualDirections foreach {
