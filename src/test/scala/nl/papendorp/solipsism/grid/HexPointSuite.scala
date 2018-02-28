@@ -2,7 +2,7 @@ package nl.papendorp.solipsism.grid
 
 
 import nl.papendorp.solipsism.TestConfiguration
-import nl.papendorp.solipsism.grid.HexPoint.Origin
+import nl.papendorp.solipsism.grid.HexPoint._
 import org.scalacheck.Arbitrary._
 import org.scalacheck.Prop.forAll
 
@@ -120,7 +120,7 @@ class HexPointSuite
 			check( forAll( ( point: HexPoint ) => {
 				val halfSumOfPositionSizes = (List( point.x, point.y, point.z ) map abs).sum / 2
 				halfSumOfPositionSizes === point.size
-				//but sum/2 overflows for n > MAX_INT/4, while implementation doesn't
+				//but sum/2 overflows for |n| > MAX_INT/4, while implementation doesn't
 			} ) )
 		}
 	}
@@ -132,6 +132,19 @@ class HexPointSuite
 
 		"be commutative" in {
 			check( forAll( ( left: HexPoint, right: HexPoint ) => left.distanceTo( right ) === right.distanceTo( left ) ) )
+		}
+	}
+
+	"Multiplying a point by a scalar" should {
+		"be commutative" in {
+			check( forAll( ( point: HexPoint, scalar: Int ) => (point * scalar) == (scalar * point) ) )
+		}
+
+		"distribute over its positions" in {
+			def multipliesPosition( position: HexPoint => Int )( point: HexPoint, scalar: Int ): Boolean =
+				position( point * scalar ) === (position( point ) * scalar)
+
+			check( forAll( multipliesPosition( _.x ) _ ) && forAll( multipliesPosition( _.y ) _ ) && forAll( multipliesPosition( _.z ) _ ) )
 		}
 	}
 }

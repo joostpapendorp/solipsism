@@ -12,7 +12,10 @@ object HexPoint
 
 	def unapply( point: HexPoint ): Option[ (Int, Int, Int) ] = Option( point )
 
-	implicit def *( scalar: Int, hex: HexPoint ): HexPoint = hex.*( scalar )
+	implicit class HexPointScalar( val self: Int ) extends AnyVal
+	{
+		def *( hex: HexPoint ): HexPoint = hex.*( self )
+	}
 }
 
 sealed class HexPoint( val x: Int = 0, val y: Int = 0 )
