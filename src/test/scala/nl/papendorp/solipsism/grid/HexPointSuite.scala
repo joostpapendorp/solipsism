@@ -142,6 +142,11 @@ class HexPointSuite
 		}
 	}
 
+	"Any point" should {
+		"allow to iterate over its coordinates" in {
+			check( forAll( ( point: HexPoint ) => (for( position <- point ) yield position) == Seq( point.x, point.y, point.z ) ) )
+		}
+	}
 	"The distance between two points" should {
 		"equal the size of the difference" in {
 			check( forAll( ( left: HexPoint, right: HexPoint ) => left.distanceTo( right ) === (left - right).size ) )

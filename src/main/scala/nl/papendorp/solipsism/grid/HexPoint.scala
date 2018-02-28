@@ -16,6 +16,7 @@ object HexPoint
 	{
 		def *( hex: HexPoint ): HexPoint = hex.*( self )
 	}
+
 }
 
 sealed class HexPoint( val x: Int = 0, val y: Int = 0 )
@@ -30,6 +31,8 @@ sealed class HexPoint( val x: Int = 0, val y: Int = 0 )
 	def *( scalar: Int ): HexPoint = (x * scalar, y * scalar)
 
 	def unary_- : HexPoint = (-x, -y)
+
+	def map[ RESULT ]( f: Int => RESULT ): Seq[ RESULT ] = Seq( f( x ), f( y ), f( z ) )
 
 	// optimized from (this-that).size
 	def distanceTo( that: HexPoint ): Int = size( this.x - that.x, this.y - that.y, this.z - that.z )
