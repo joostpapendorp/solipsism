@@ -14,14 +14,14 @@ object Rotation
 	{
 		override lazy val reverse: Rotation = CounterClockwise
 
-		override def rotate60( point: HexPoint ) = (-point.z, -point.x)
+		override def rotate60( point: HexPoint ): HexPoint = (-point.z, -point.x)
 	}
 
 	case object CounterClockwise extends Rotation
 	{
 		override lazy val reverse: Rotation = Clockwise
 
-		override def rotate60( point: HexPoint ) = (-point.y, -point.z)
+		override def rotate60( point: HexPoint ): HexPoint = (-point.y, -point.z)
 	}
 
 }

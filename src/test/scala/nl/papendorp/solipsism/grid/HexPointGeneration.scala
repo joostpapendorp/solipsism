@@ -7,10 +7,10 @@ trait HexPointGeneration
 {
 	def slightlyLessLargeNumbers: Gen[ Int ] = choose( Int.MinValue / 6, Int.MaxValue / 6 )
 
-	def pointGenerator: Gen[ HexPoint ] = for {
+	def hexPoints: Gen[ HexPoint ] = for {
 		x <- slightlyLessLargeNumbers
 		y <- slightlyLessLargeNumbers
 	} yield HexPoint( x, y )
 
-	implicit def arbitraryPoint: Arbitrary[ HexPoint ] = Arbitrary( pointGenerator )
+	implicit def arbitraryPoint: Arbitrary[ HexPoint ] = Arbitrary( hexPoints )
 }

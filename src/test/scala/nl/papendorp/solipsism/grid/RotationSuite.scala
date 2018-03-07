@@ -20,7 +20,7 @@ class RotationSuite
 
 		"wrap around in six steps" in {
 			val fullCircleRotations: Gen[ (HexPoint, Rotation, Int) ] = for {
-				coordinate <- pointGenerator
+				coordinate <- hexPoints
 				rotation <- rotationGenerator
 				steps <- slightlyLessLargeNumbers
 			} yield (coordinate, rotation, steps * 6)
@@ -34,7 +34,7 @@ class RotationSuite
 
 		"reverse to same location" in {
 			val rotations: Gen[ (HexPoint, Rotation, Int) ] = for {
-				coordinate <- pointGenerator
+				coordinate <- hexPoints
 				rotation <- rotationGenerator
 				circles <- Arbitrary.arbInt.arbitrary
 			} yield (coordinate, rotation, circles)
@@ -52,7 +52,7 @@ class RotationSuite
 
 		"mirror its reverse rotation" in {
 			val rotations: Gen[ (HexPoint, Rotation, Int) ] = for {
-				coordinate <- pointGenerator
+				coordinate <- hexPoints
 				rotation <- rotationGenerator
 				steps <- choose( 0, 6 )
 			} yield (coordinate, rotation, steps)
