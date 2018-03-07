@@ -5,7 +5,6 @@ import nl.papendorp.solipsism.view.Vector2D.Origin
 import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.Prop.forAll
 import org.scalacheck.{Arbitrary, Gen}
-import org.scalactic.TolerantNumerics
 
 class Vector2DSuite extends TestConfiguration
 {
@@ -15,8 +14,6 @@ class Vector2DSuite extends TestConfiguration
 	} yield Vector2D( x, y )
 
 	implicit val anyVector: Arbitrary[ Vector2D ] = Arbitrary( pointGenerator )
-	implicit val doubleEquality = TolerantNumerics.tolerantDoubleEquality( 0.01 )
-
 
 	"A Vector2D" should {
 		"default to origin" in {
@@ -38,11 +35,10 @@ class Vector2DSuite extends TestConfiguration
 		}
 
 		"map properly" in {
-			check( forAll{ ( v: Vector2D ) => {
+			check( forAll( ( v: Vector2D ) => {
 				val mapped = for( x <- v ) yield x * 3
 				mapped == List( v.x * 3, v.y * 3 )
-			}
-			} )
+			} ) )
 		}
 	}
 
@@ -61,7 +57,7 @@ class Vector2DSuite extends TestConfiguration
 
 		"have a zero element" in {
 			check( forAll( ( v: Vector2D ) => {
-				v + Vector2D( 0.0, 0.0 ) == v
+				v + Origin == v
 			} ) )
 		}
 
@@ -106,12 +102,12 @@ class Vector2DSuite extends TestConfiguration
 		}
 
 		"invert adding" in {
-			check( forAll( ( left: Vector2D, right: Vector2D ) => left + right - right === left ) )
+			check( forAll( ( left: Vector2D, right: Vector2D ) => left + right - right == left ) )
 		}
 
 		"have a zero element" in {
 			check( forAll( ( vector: Vector2D ) => {
-				vector - (0.0, 0.0) == vector
+				vector - Origin == vector
 			} ) )
 		}
 	}
