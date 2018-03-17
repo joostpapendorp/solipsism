@@ -1,9 +1,7 @@
 package nl.papendorp.solipsism.grid
 
 import nl.papendorp.solipsism.TestConfiguration
-import org.scalacheck.Gen.choose
 import org.scalacheck.Prop.forAll
-import org.scalacheck.{Arbitrary, Gen}
 
 class RotationSuite
 	extends TestConfiguration
@@ -13,59 +11,37 @@ class RotationSuite
 	"Rotating" should {
 		"invert coordinate after three steps" in {
 			def threeRotationsInvertsCoordinate( coordinate: HexPoint, rotation: Rotation ): Boolean =
-				coordinate.rotate60( rotation, 3 ) === -coordinate
+				coordinate.rotate60( rotation, 3 ) == -coordinate
 
 			check( forAll( threeRotationsInvertsCoordinate _ ) )
 		}
 
 		"wrap around in six steps" in {
-			val fullCircleRotations: Gen[ (HexPoint, Rotation, Int) ] = for {
-				coordinate <- hexPoints
-				rotation <- rotationGenerator
-				steps <- slightlyLessLargeNumbers
-			} yield (coordinate, rotation, steps * 6)
+			def endWhereStarted( turn: Turn ): Boolean = turn.point.rotate60( turn.rotation, turn.steps ) == turn.point
 
-			def endWhereStarted( fullCircleRotation: (HexPoint, Rotation, Int) ): Boolean = fullCircleRotation match {
-				case (coordinate, rotation, steps) => coordinate.rotate60( rotation, steps ) === coordinate
-			}
-
-			check( forAll( fullCircleRotations )( endWhereStarted ) )
+			check( forAll( fullCircles )( endWhereStarted ) )
 		}
 
 		"reverse to same location" in {
-			val rotations: Gen[ (HexPoint, Rotation, Int) ] = for {
-				coordinate <- hexPoints
-				rotation <- rotationGenerator
-				circles <- Arbitrary.arbInt.arbitrary
-			} yield (coordinate, rotation, circles)
-
-			def reversesToStart( rotations: (HexPoint, Rotation, Int) ): Boolean = rotations match {
-				case (coordinate, rotation, steps) => {
-					val forwards = coordinate.rotate60( rotation, steps )
-					val reverse = forwards.rotate60( rotation.reverse, steps )
-					reverse === coordinate
-				}
+			def reversesToStart( turn: Turn ): Boolean =
+			{
+				val forwards = turn.point.rotate60( turn.rotation, turn.steps )
+				val reverse = forwards.rotate60( turn.rotation.reverse, turn.steps )
+				reverse == turn.point
 			}
 
-			check( forAll( rotations )( reversesToStart ) )
+			check( forAll( unboundedTurns )( reversesToStart ) )
 		}
 
 		"mirror its reverse rotation" in {
-			val rotations: Gen[ (HexPoint, Rotation, Int) ] = for {
-				coordinate <- hexPoints
-				rotation <- rotationGenerator
-				steps <- choose( 0, 6 )
-			} yield (coordinate, rotation, steps)
-
-			def mirrorsOppositeDirection( rotations: (HexPoint, Rotation, Int) ): Boolean = rotations match {
-				case (coordinate, rotation, steps) => {
-					val positiveClockwise = coordinate.rotate60( rotation, steps )
-					val negativeCounterClockwise = coordinate.rotate60( rotation.reverse, -steps )
-					positiveClockwise === negativeCounterClockwise
-				}
+			def mirrorsOppositeDirection( turn: Turn ): Boolean =
+			{
+				val positiveClockwise = turn.point.rotate60( turn.rotation, turn.steps )
+				val negativeCounterClockwise = turn.point.rotate60( turn.rotation.reverse, -turn.steps )
+				positiveClockwise == negativeCounterClockwise
 			}
 
-			check( forAll( rotations )( mirrorsOppositeDirection ) )
+			check( forAll( partialCircles )( mirrorsOppositeDirection ) )
 		}
 	}
 }
