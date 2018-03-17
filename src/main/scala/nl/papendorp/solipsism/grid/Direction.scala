@@ -1,5 +1,7 @@
 package nl.papendorp.solipsism.grid
 
+import scala.collection.breakOut
+
 sealed trait Direction
 {
 }
@@ -11,24 +13,17 @@ sealed trait Direction
  * Taken all together, they form a circle around Origin.
  * For example: XUp walks along the x-axis, thus keeping x constant. It increments y and decrements z. It inverts XDown.
  */
-object Direction
+object Direction extends Enumeration
 {
-
 	// in order of clockwise rotation:
-	case object XUp extends Direction //   (  0, +y, -z )
+	val XUp,       // (  0, +y, -z )
+	YUp,           // ( +x,  0, -z )
+	ZUp,           // ( +x, -y,  0 )
+	XDown,         // (  0, -y, +z )
+	YDown,         // ( -x,  0, +z )
+	ZDown = Value  // ( -x, +y,  0 )
 
-	case object YUp extends Direction //   ( +x,  0, -z )
-
-	case object ZUp extends Direction //   ( +x, -y,  0 )
-
-	case object XDown extends Direction // (  0, -y, +z )
-
-	case object YDown extends Direction // ( -x,  0, +z )
-
-	case object ZDown extends Direction // ( -x, +y,  0 )
-
-	lazy val directions: Map[ Direction, HexPoint ] = {
-		val names = Seq( XUp, YUp, ZUp, XDown, YDown, ZDown )
-		(names zip (0, 1).circle).toMap
+	lazy val directions: Map[ Direction.Value, HexPoint ] = {
+		(Direction.values zip (0, 1).circle) ( breakOut )
 	}
 }

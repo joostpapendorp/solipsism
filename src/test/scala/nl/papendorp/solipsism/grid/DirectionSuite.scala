@@ -7,15 +7,13 @@ class DirectionSuite
 	extends TestConfiguration
 {
 	"All directions" should {
-		val allDirections = Seq( XUp, YUp, ZUp, XDown, YDown, ZDown )
-
 		"move along their axes" in {
-			allDirections foreach {
-				case direction@(XUp | XDown) => directions( direction ).x should be( 0 )
-				case direction@(YUp | YDown) => directions( direction ).y should be( 0 )
-				case direction@(ZUp | ZDown) => directions( direction ).z should be( 0 )
+			Direction.values foreach (direction => direction match {
+				case XUp | XDown => directions( direction ).x should be( 0 )
+				case YUp | YDown => directions( direction ).y should be( 0 )
+				case ZUp | ZDown => directions( direction ).z should be( 0 )
 				case _ => fail
-			}
+			})
 		}
 
 		"invert to their counterparts" in {
@@ -26,7 +24,7 @@ class DirectionSuite
 
 		"form a circle together" in {
 			val circle = HexPoint( 0, 1 ).circle
-			val actualDirections = allDirections map directions
+			val actualDirections = Direction.values.to[ IndexedSeq ] map directions
 
 			circle zip actualDirections foreach {
 				case (expected, actual) => expected should be( actual )
@@ -35,11 +33,11 @@ class DirectionSuite
 		}
 
 		"have 6 distinct values" in {
-			allDirections.toSet.size should be( 6 )
+			Direction.values.size should be( 6 )
 		}
 
 		"have size 1" in {
-			allDirections foreach (directions( _ ).size should be( 1 ))
+			Direction.values foreach (directions( _ ).size should be( 1 ))
 		}
 	}
 }
