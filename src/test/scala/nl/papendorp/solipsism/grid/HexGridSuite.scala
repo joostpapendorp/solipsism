@@ -8,49 +8,37 @@ class HexGridSuite
 	extends TestConfiguration
 		with HexPointGeneration
 {
+
+	case class GridCoordinate( grid: HexGrid, coordinate: HexPoint )
+
 	val grids: Gen[ HexGrid ] = for {
-		coordinates <- Gen.listOf( hexPoints )
+		coordinates <- nonEmptyVectorOf( hexPoints )
 	} yield HexGrid( coordinates )
 
-	val pointsOnNonEmptyGrids: Gen[ (HexGrid, HexPoint) ] = for {
+	val pointsOnNonEmptyGrids: Gen[ GridCoordinate ] = for {
 		grid <- grids
 		if grid.coordinates.nonEmpty
 		coordinate <- Gen.oneOf( grid.coordinates )
-	} yield (grid, coordinate)
+	} yield GridCoordinate( grid, coordinate )
 
 	"A grid of hexagons" when {
 		"empty" should {
 			"Have radius 0" in {
-				HexGrid( Nil ).radius === 0
+				HexGrid( Vector() ).radius == 0
 			}
 		}
 
 		"non-empty" should {
 			"consistently address hexes" in {
-				def yieldSameHexForSameCoordinate( coordinateWithinGrid: (HexGrid, HexPoint) ): Boolean = coordinateWithinGrid match {
-					case (grid: HexGrid, coordinate: HexPoint) => grid( coordinate ) == grid( coordinate )
-					case _ => false
-				}
-
-				check( forAll( pointsOnNonEmptyGrids )( yieldSameHexForSameCoordinate ) )
+				check( forAll( pointsOnNonEmptyGrids )( l => l.grid( l.coordinate ) == l.grid( l.coordinate ) ) )
 			}
 
 			"contain tiles with coordinates within its radius" in {
-				def gridContainsTileWithCoordinate( location: (HexGrid, HexPoint) ): Boolean = location match {
-					case (grid, coordinate) => grid( coordinate ) == Seq()
-					case _ => false
-				}
-
-				check( forAll( pointsOnNonEmptyGrids )( gridContainsTileWithCoordinate ) )
+				check( forAll( pointsOnNonEmptyGrids )( l => l.grid( l.coordinate ) == Set() ) )
 			}
 
 			"encompass its points" in {
-				def pointSizeFallsWithinGridRadius( location: (HexGrid, HexPoint) ): Boolean = location match {
-					case (grid, coordinate) => grid.radius >= coordinate.size
-					case _ => false
-				}
-
-				check( forAll( pointsOnNonEmptyGrids )( pointSizeFallsWithinGridRadius ) )
+				check( forAll( pointsOnNonEmptyGrids )( l => l.grid.radius >= l.coordinate.size ) )
 			}
 		}
 	}
