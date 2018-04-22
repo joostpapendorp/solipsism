@@ -4,9 +4,9 @@ organization := "nl.papendorp"
 
 version := "0.1-SNAPSHOT"
 
-scalaVersion := "2.12.4"
+scalaVersion := "2.12.5"
 
-lazy val akkaVersion = "2.5.6"
+lazy val akkaVersion = "2.5.11"
 lazy val scalafxVersion = "8.0.144-R12"
 
 lazy val scalaTestVersion = "3.0.1"
